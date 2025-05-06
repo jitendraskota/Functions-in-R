@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced R: Writing Effective Functions</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            background-color: #e8f4fc;
+            padding: 8px;
+            border-left: 4px solid #3498db;
+        }
+        code {
+            background-color: #f0f0f0;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        .ethical-case {
+            background-color: #fff8e1;
+            border-left: 4px solid #ffc107;
+            padding: 10px;
+            margin: 15px 0;
+        }
+        .checkpoint {
+            background-color: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 10px;
+            margin: 15px 0;
+        }
+        .time-badge {
+            background-color: #3498db;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Advanced R: Writing Effective Functions</h1>
+    <p>This guide covers function writing in R with emphasis on practical applications, ethical considerations, and professional standards.</p>
+
+    <h2><span class="time-badge">7 min</span> 1. Function Basics and Style</h2>
+    
+    <h3>Prerequisites: Vectors in R</h3>
+    <p>Before writing functions, ensure you understand:</p>
+    <ul>
+        <li>Vector types (numeric, character, logical)</li>
+        <li>Vector operations (element-wise calculations)</li>
+        <li>Subsetting vectors with <code>[ ]</code></li>
+    </ul>
+    
+    <h3>Core Concepts</h3>
+    <pre><code># Basic function structure
+calculate_bmi <- function(mass_kg, height_m) {
+    bmi <- mass_kg / (height_m ^ 2)
+    return(bmi)
+}</code></pre>
+    
+    <p><strong>Professional Style Guidelines:</strong></p>
+    <ul>
+        <li>Use verbs for function names (<code>calculate_bmi</code> not <code>bmi_calculator</code>)</li>
+        <li>Include argument checks (<code>if (height_m <= 0) stop("Height must be positive")</code>)</li>
+        <li>Document with Roxygen comments (<code>#' @param</code>)</li>
+    </ul>
+    
+    <div class="ethical-case">
+        <h4>Ethical Case Study: Medical Data Functions</h4>
+        <p>You create a <code>diagnose_hypertension()</code> function for blood pressure analysis. Later, you discover the cutoff values (120/80 mmHg) were derived from studies with primarily male participants.</p>
+        <p><strong>Discussion Question:</strong> Should your function include gender-specific thresholds? What data would you need to verify this?</p>
+    </div>
+    
+    <div class="checkpoint">
+        <h4>Understanding Check</h4>
+        <p><strong>Q:</strong> Why is <code>filter_data(x)</code> a better function name than <code>data_filter(x)</code>?</p>
+        <p><strong>A:</strong> (Expected: Verb-noun structure makes purpose clearer)</p>
+    </div>
+
+    <h2><span class="time-badge">7 min</span> 2. Vector Functions</h2>
+    
+    <h3>Prerequisites: Vectorization</h3>
+    <p>Key concepts to review:</p>
+    <ul>
+        <li>How R handles vector operations</li>
+        <li>The <code>purrr::map()</code> family</li>
+        <li>NA handling strategies</li>
+    </ul>
+    
+    <h3>Effective Vector Functions</h3>
+    <pre><code># Robust rescaling function
+rescale01 <- function(x) {
+    rng <- range(x, na.rm = TRUE, finite = TRUE)
+    (x - rng[1]) / (rng[2] - rng[1])
+}</code></pre>
+    
+    <p><strong>Key Features:</strong></p>
+    <ul>
+        <li>Handles NAs and infinite values</li>
+        <li>Uses <code>range()</code> for efficiency</li>
+        <li>Clear variable naming</li>
+    </ul>
+    
+    <div class="ethical-case">
+        <h4>Ethical Case Study: College Admissions</h4>
+        <p>Your <code>rescale_scores()</code> function normalizes SAT scores (200-800 scale → 0-1). The admissions office uses it to compare applicants, but the original SAT scaling was found to disadvantage some groups.</p>
+        <p><strong>Discussion Question:</strong> Should your function include a warning about known biases in the input data?</p>
+    </div>
+    
+    <div class="checkpoint">
+        <h4>Understanding Check</h4>
+        <p><strong>Q:</strong> Why does <code>rescale01(c(1, 2, NA, Inf))</code> work while simpler versions might fail?</p>
+        <p><strong>A:</strong> (Expected: <code>finite = TRUE</code> handles infinite values)</p>
+    </div>
+
+    <h2><span class="time-badge">7 min</span> 3. Data Frame Functions</h2>
+    
+    <h3>Prerequisites: dplyr Verbs</h3>
+    <p>Essential skills:</p>
+    <ul>
+        <li><code>filter()</code>, <code>mutate()</code>, <code>summarize()</code></li>
+        <li>Tidy evaluation with <code>{{ }}</code></li>
+        <li>Grouped operations</li>
+    </ul>
+    
+    <h3>Data Frame Function Template</h3>
+    <pre><code># Reusable summary function
+summary_stats <- function(df, var) {
+    df |>
+        summarize(
+            mean = mean({{ var }}, na.rm = TRUE),
+            sd = sd({{ var }}, na.rm = TRUE),
+            n = n()
+        )
+}</code></pre>
+    
+    <p><strong>Advanced Technique:</strong></p>
+    <pre><code># Flexible grouped summaries
+grouped_summary <- function(df, group_var, sum_var) {
+    df |>
+        group_by({{ group_var }}) |>
+        summary_stats({{ sum_var }})
+}</code></pre>
+    
+    <div class="ethical-case">
+        <h4>Ethical Case Study: Policing Data</h4>
+        <p>Your <code>summarize_stops()</code> function shows traffic stops by demographic groups. The output shows disparities, but doesn't account for neighborhood population differences.</p>
+        <p><strong>Discussion Question:</strong> What additional parameters should your function include to provide proper context?</p>
+    </div>
+    
+    <div class="checkpoint">
+        <h4>Understanding Check</h4>
+        <p><strong>Q:</strong> Why use <code>{{ var }}</code> instead of <code>var</code> in data frame functions?</p>
+        <p><strong>A:</strong> (Expected: tidy evaluation allows flexible column specification)</p>
+    </div>
+
+    <h2><span class="time-badge">7 min</span> 4. Plot Functions</h2>
+    
+    <h3>Prerequisites: ggplot2 Basics</h3>
+    <p>Must understand:</p>
+    <ul>
+        <li>Grammar of graphics (aesthetics, geoms)</li>
+        <li>Plot layering with <code>+</code></li>
+        <li>Common plot types (histograms, scatterplots)</li>
+    </ul>
+    
+    <h3>Modular Plot Function</h3>
+    <pre><code># Flexible histogram function
+custom_hist <- function(df, var, binwidth = NULL) {
+    ggplot(df, aes(x = {{ var }})) +
+        geom_histogram(binwidth = binwidth, fill = "#3498db", alpha = 0.8) +
+        labs(title = paste("Distribution of", deparse(substitute(var))))
+}</code></pre>
+    
+    <p><strong>Pro Tip:</strong> Use <code>rlang::englue()</code> for dynamic titles:</p>
+    <pre><code>title <- rlang::englue("Distribution of {{var}}")</code></pre>
+    
+    <div class="ethical-case">
+        <h4>Ethical Case Study: Climate Data</h4>
+        <p>Your <code>plot_temperature()</code> function shows global warming trends. A news outlet uses it with modified axis ranges to exaggerate changes.</p>
+        <p><strong>Discussion Question:</strong> How could you design the function to prevent misleading visualizations?</p>
+    </div>
+    
+    <div class="checkpoint">
+        <h4>Understanding Check</h4>
+        <p><strong>Q:</strong> What's the advantage of using <code>binwidth = NULL</code> as a default argument?</p>
+        <p><strong>A:</strong> (Expected: Lets ggplot2 calculate sensible defaults)</p>
+    </div>
+
+    <h2><span class="time-badge">5 min</span> 5. Summary</h2>
+    
+    <h3>Key Principles</h3>
+    <ol>
+        <li><strong>Modularity:</strong> Break code into single-purpose functions</li>
+        <li><strong>Robustness:</strong> Handle edge cases (NAs, zero-length inputs)</li>
+        <li><strong>Transparency:</strong> Document limitations and assumptions</li>
+    </ol>
+    
+    <h3>Further Learning</h3>
+    <ul>
+        <li><code>Advanced R</code> by Hadley Wickham (Functions chapter)</li>
+        <li><code>R Packages</code> (Function documentation best practices)</li>
+        <li>purrr package for functional programming</li>
+    </ul>
+    
+    <div class="ethical-case">
+        <h4>Final Reflection</h4>
+        <p>Consider: How might the functions you write today be misused in 5 years? What safeguards can you build in now?</p>
+    </div>
+</body>
+</html>
