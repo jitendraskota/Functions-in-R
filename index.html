@@ -7,99 +7,277 @@
     <style>
         body {
             font-family: 'Helvetica Neue', Arial, sans-serif;
-            line-height: 1.6;
+            line-height: 1.8;
             color: #333;
             max-width: 900px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 25px;
         }
-        h1, h2 {
+        h1, h2, h3 {
             color: #2c3e50;
+        }
+        h1 {
             border-bottom: 2px solid #3498db;
-            padding-bottom: 5px;
+            padding-bottom: 10px;
+        }
+        h2 {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-left: 4px solid #3498db;
+            margin-top: 30px;
+        }
+        h3 {
+            color: #2980b9;
+            margin-top: 20px;
+        }
+        .concept-box {
+            background-color: #e8f4fc;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            border-left: 3px solid #3498db;
+        }
+        .code-container {
+            position: relative;
+            margin: 25px 0;
         }
         pre {
             background-color: #f5f5f5;
             padding: 15px;
             border-radius: 5px;
             overflow-x: auto;
-            border-left: 3px solid #3498db;
-        }
-        .ethics {
-            background-color: #fff8e1;
-            padding: 15px;
-            border-radius: 5px;
-            margin: 20px 0;
-            border-left: 3px solid #ffc107;
-        }
-        .code-container {
-            position: relative;
+            line-height: 1.5;
+            font-size: 14px;
         }
         .copy-btn {
             position: absolute;
-            top: 5px;
-            right: 5px;
+            top: 10px;
+            right: 10px;
             background-color: #3498db;
             color: white;
             border: none;
-            padding: 3px 8px;
+            padding: 5px 10px;
             border-radius: 3px;
             cursor: pointer;
+            font-size: 13px;
+        }
+        .ethics {
+            background-color: #fff8e1;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 30px 0;
+            border-left: 4px solid #ffc107;
+        }
+        .checkpoint {
+            background-color: #e8f5e9;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 25px 0;
+        }
+        .note {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-left: 3px solid #95a5a6;
+            margin: 20px 0;
+            font-style: italic;
         }
     </style>
 </head>
 <body>
     <h1>Writing R Functions with the Diamonds Dataset</h1>
+    <p>This guide teaches fundamental R programming concepts through practical examples using the <code>diamonds</code> dataset, with emphasis on ethical data practices.</p>
 
-    <h2>1. Basic Functions</h2>
+    <h2>1. Basic Function Structure</h2>
+    
+    <div class="concept-box">
+        <h3>Core Concept: What is a Function?</h3>
+        <p>A function is a reusable block of code that:</p>
+        <ul>
+            <li>Takes <strong>inputs</strong> (arguments)</li>
+            <li>Performs <strong>operations</strong></li>
+            <li>Returns <strong>outputs</strong></li>
+        </ul>
+        <p>Functions help avoid code duplication and make your analysis more reproducible.</p>
+    </div>
+
     <div class="code-container">
-        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-        <pre><code># Calculate price per carat
+        <button class="copy-btn" onclick="copyCode(this)">Copy Code</button>
+        <pre><code># Basic function to calculate price-to-carat ratio
 price_ratio <- function(price, carat) {
-  price / carat
+  # Divide price by carat weight
+  ratio <- price / carat
+  
+  # Explicit return statement
+  return(ratio)
 }
 
-diamonds |> mutate(value = price_ratio(price, carat))</code></pre>
+# Apply to the diamonds dataset
+diamonds <- diamonds |> 
+  mutate(value_ratio = price_ratio(price, carat))</code></pre>
+    </div>
+
+    <div class="checkpoint">
+        <h3>Understanding Check</h3>
+        <p><strong>Q1:</strong> What happens if we call <code>price_ratio(5000, NA)</code>? How could we modify the function to handle this?</p>
+        <p><strong>Q2:</strong> Why do we use <code>return()</code> explicitly instead of letting R return the last value?</p>
     </div>
 
     <div class="ethics">
-        <h3>Data Ethics Consideration</h3>
-        <p>The <code>diamonds</code> dataset shows that Ideal-cut diamonds average <strong>$3,458</strong> while Fair-cut average <strong>$4,359</strong> despite lower quality.</p>
-        <p><strong>Discussion:</strong> How might a function that recommends "best value" diamonds based solely on price/carat perpetuate market biases against certain cuts?</p>
+        <h3>Ethical Data Practice</h3>
+        <p>The <code>diamonds</code> dataset shows that Ideal-cut diamonds (highest quality) average <strong>$3,458</strong> while Fair-cut (lowest quality) average <strong>$4,359</strong>.</p>
+        
+        <p><strong>Discussion Questions:</strong></p>
+        <ol>
+            <li>How might using price/carat alone as a "value" metric reinforce market biases against certain diamond cuts?</li>
+            <li>What additional variables from the dataset (e.g., clarity, color) should we consider for a more balanced valuation?</li>
+            <li>How could the lack of production cost data in this dataset lead to misleading conclusions about true "value"?</li>
+        </ol>
+    </div>
+
+    <div class="note">
+        <p><strong>Teaching Tip:</strong> Demonstrate how to view the data with <code>View(diamonds)</code> or <code>glimpse(diamonds)</code> before writing functions to understand what you're working with.</p>
     </div>
 
     <h2>2. Data Frame Functions</h2>
+    
+    <div class="concept-box">
+        <h3>Core Concept: Working with Tabular Data</h3>
+        <p>When working with data frames:</p>
+        <ul>
+            <li>Functions should handle entire columns (vectors)</li>
+            <li>Use <code>dplyr</code> verbs (<code>mutate</code>, <code>filter</code>) inside functions</li>
+            <li>Consider both single values and vectorized operations</li>
+        </ul>
+    </div>
+
     <div class="code-container">
-        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-        <pre><code># Flag expensive diamonds
+        <button class="copy-btn" onclick="copyCode(this)">Copy Code</button>
+        <pre><code># Function to flag diamonds above a price threshold
 flag_expensive <- function(df, threshold) {
-  df |> mutate(expensive = price > threshold)
+  df |> 
+    mutate(
+      expensive = price > threshold,
+      # Add context about how far above threshold
+      price_diff = price - threshold
+    )
 }
 
-diamonds |> flag_expensive(5000)</code></pre>
+# Apply with $5,000 threshold
+diamonds_flagged <- diamonds |> 
+  flag_expensive(5000)
+
+# Count expensive diamonds
+diamonds_flagged |> 
+  count(expensive)</code></pre>
+    </div>
+
+    <div class="checkpoint">
+        <h3>Understanding Check</h3>
+        <p><strong>Q1:</strong> How would you modify this function to make the threshold optional, defaulting to the median price?</p>
+        <p><strong>Q2:</strong> What's the advantage of returning the modified data frame instead of just the expensive flags?</p>
     </div>
 
     <div class="ethics">
-        <h3>Data Ethics Consideration</h3>
-        <p>In the data, D-color (most rare) diamonds are 3x more expensive than J-color, but this doesn't reflect actual visibility differences to the naked eye.</p>
-        <p><strong>Discussion:</strong> Should a function that flags "overpriced" diamonds account for subjective human perception of color grades?</p>
+        <h3>Ethical Data Practice</h3>
+        <p>In the data, D-color (most rare/colorless) diamonds are priced 3× higher than J-color (slightly tinted), though the visual difference is subtle to untrained eyes.</p>
+        
+        <p><strong>Discussion Questions:</strong></p>
+        <ol>
+            <li>Should a function that flags "overpriced" diamonds account for subjective human perception of color grades?</li>
+            <li>How might using fixed price thresholds disadvantage certain diamond sizes or cuts?</li>
+            <li>What ethical obligations do we have when creating categorization functions that might affect purchasing decisions?</li>
+        </ol>
     </div>
 
     <h2>3. Plot Functions</h2>
+    
+    <div class="concept-box">
+        <h3>Core Concept: Reusable Visualizations</h3>
+        <p>Effective plot functions:</p>
+        <ul>
+            <li>Take a data frame as input</li>
+            <li>Use <code>ggplot2</code> syntax</li>
+            <li>Allow customization through arguments</li>
+            <li>Return the plot object for further modification</li>
+        </ul>
+    </div>
+
     <div class="code-container">
-        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-        <pre><code># Plot price distribution by clarity
-plot_clarity <- function(df) {
-  ggplot(df, aes(x=clarity, y=price)) + 
-    geom_boxplot() +
-    scale_y_log10()
-}</code></pre>
+        <button class="copy-btn" onclick="copyCode(this)">Copy Code</button>
+        <pre><code># Create a customizable price distribution plot
+plot_price_distribution <- function(df, 
+                                   log_scale = TRUE, 
+                                   highlight_cut = NULL) {
+  
+  p <- ggplot(df, aes(x = price)) +
+    geom_histogram(fill = "steelblue", bins = 30)
+  
+  if (log_scale) {
+    p <- p + scale_x_log10(labels = scales::dollar)
+  } else {
+    p <- p + scale_x_continuous(labels = scales::dollar)
+  }
+  
+  if (!is.null(highlight_cut)) {
+    p <- p + 
+      geom_vline(
+        xintercept = median(df$price[df$cut == highlight_cut]),
+        color = "red",
+        linetype = "dashed"
+      )
+  }
+  
+  p + labs(title = "Diamond Price Distribution")
+}
+
+# Example usage
+plot_price_distribution(diamonds, log_scale = TRUE, highlight_cut = "Ideal")</code></pre>
+    </div>
+
+    <div class="checkpoint">
+        <h3>Understanding Check</h3>
+        <p><strong>Q1:</strong> What happens if we specify a <code>highlight_cut</code> that doesn't exist in the data?</p>
+        <p><strong>Q2:</strong> Why might we want to make the <code>log_scale</code> parameter optional?</p>
     </div>
 
     <div class="ethics">
-        <h3>Data Ethics Consideration</h3>
-        <p>The plot shows SI1 clarity diamonds (most common) appear "low quality" due to price compression, while ultra-rare IF grades dominate the high end.</p>
-        <p><strong>Discussion:</strong> How might using a log-scale in visualizations mask affordability barriers for average consumers?</p>
+        <h3>Ethical Data Practice</h3>
+        <p>The log-scale visualization compresses price differences, making the $1,000-$10,000 range (where most diamonds cluster) appear less varied than the ultra-high end.</p>
+        
+        <p><strong>Discussion Questions:</strong></p>
+        <ol>
+            <li>How might using a log-scale by default obscure affordability challenges for average consumers?</li>
+            <li>When would a linear scale be more ethically appropriate despite its visual limitations?</li>
+            <li>What responsibilities do we have in documenting our visualization choices (like scale transformations)?</li>
+        </ol>
+    </div>
+
+    <div class="note">
+        <p><strong>Teaching Tip:</strong> Show both log-scale and linear versions of the plot to demonstrate how choice of scale affects interpretation.</p>
+    </div>
+
+    <h2>Summary: Key Principles</h2>
+    <div class="concept-box">
+        <h3>Function Writing Best Practices</h3>
+        <ul>
+            <li><strong>Single Responsibility:</strong> Each function should do one thing well</li>
+            <li><strong>Clear Naming:</strong> Use verbs for functions (<code>calculate_</code>, <code>plot_</code>)</li>
+            <li><strong>Defensive Programming:</strong> Check inputs and handle edge cases</li>
+            <li><strong>Documentation:</strong> Use comments to explain purpose and parameters</li>
+            <li><strong>Ethical Awareness:</strong> Consider how your functions might be misused</li>
+        </ul>
+    </div>
+
+    <div class="ethics">
+        <h3>Final Reflection</h3>
+        <p>Consider this scenario: Your <code>recommend_diamond()</code> function is used by an online jewelry retailer. It suggests "best value" diamonds based on your price/carat algorithm.</p>
+        
+        <p><strong>Discussion Questions:</strong></p>
+        <ol>
+            <li>What potential biases might be embedded in your recommendation algorithm?</li>
+            <li>How could you modify the function to provide more transparent decision-making?</li>
+            <li>What disclaimers or documentation should accompany the function's output?</li>
+        </ol>
     </div>
 
     <script>
@@ -111,8 +289,16 @@ plot_clarity <- function(df) {
             window.getSelection().addRange(range);
             document.execCommand('copy');
             window.getSelection().removeAllRanges();
+            
+            // Visual feedback
+            const originalText = button.textContent;
             button.textContent = 'Copied!';
-            setTimeout(() => button.textContent = 'Copy', 2000);
+            button.style.backgroundColor = '#2ecc71';
+            
+            setTimeout(() => {
+                button.textContent = originalText;
+                button.style.backgroundColor = '#3498db';
+            }, 2000);
         }
     </script>
 </body>
