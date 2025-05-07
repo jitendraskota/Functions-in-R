@@ -214,34 +214,42 @@ diamonds_flagged %>%
 
     <div class="code-container">
         <button class="copy-btn" onclick="copyCode(this)">Copy Code</button>
-        <pre><code># Create a customizable price distribution plot
-plot_price_distribution <- function(df, 
-                                   log_scale = TRUE, 
-                                   highlight_cut = NULL) {
-  
-  p <- ggplot(df, aes(x = price)) +
-    geom_histogram(fill = "steelblue", bins = 30)
-  
-  if (log_scale) {
-    p <- p + scale_x_log10(labels = scales::dollar)
-  } else {
-    p <- p + scale_x_continuous(labels = scales::dollar)
-  }
-  
-  if (!is.null(highlight_cut)) {
-    p <- p + 
-      geom_vline(
-        xintercept = median(df$price[df$cut == highlight_cut]),
-        color = "red",
-        linetype = "dashed"
-      )
-  }
-  
-  p + labs(title = "Diamond Price Distribution")
+        <pre><code> # Basic scatterplot
+ggplot(diamonds, aes(x = carat, y = price)) + 
+  geom_point(color = "blue", alpha = 0.5) +
+  labs(title = "Diamond Price vs. Carat")
+
+ggplot(diamonds, aes(x = table, y = price)) + 
+  geom_point(color = "blue", alpha = 0.5) +
+  labs(title = "Diamond Price vs. Carat")
+
+ggplot(diamonds, aes(x = depth, y = price)) + 
+  geom_point(color = "blue", alpha = 0.5) +
+  labs(title = "Diamond Price vs. Carat")
+
+
+
+# Function to plot price vs. ANY variable
+plot_diamonds <- function(data, xvar) {
+  ggplot(data, aes(x = {{ xvar }}, y = price)) + 
+    geom_point(color = "blue", alpha = 0.5) +
+    labs(title = paste("Price vs.", deparse(substitute(xvar))))
 }
 
-# Example usage
-plot_price_distribution(diamonds, log_scale = TRUE, highlight_cut = "Ideal")</code></pre>
+# Test it:
+plot_diamonds(diamonds, carat) 
+plot_diamonds(diamonds, depth) 
+
+
+plot_diamonds <- function(data, xvar, color = "blue") {
+  ggplot(data, aes(x = {{ xvar }}, y = price)) + 
+    geom_point(color = color, alpha = 0.5) +
+    labs(title = paste("Price vs.", deparse(substitute(xvar))))
+}
+
+# Now students can change colors:
+plot_diamonds(diamonds, carat, color = "red")
+   </code></pre>
     </div>
 
     <div class="checkpoint">
@@ -256,9 +264,10 @@ plot_price_distribution(diamonds, log_scale = TRUE, highlight_cut = "Ideal")</co
         
         <p><strong>Discussion Questions:</strong></p>
         <ol>
-            <li>How might using a log-scale by default obscure affordability challenges for average consumers?</li>
-            <li>When would a linear scale be more ethically appropriate despite its visual limitations?</li>
-            <li>What responsibilities do we have in documenting our visualization choices (like scale transformations)?</li>
+            <li>What happens if you use a column that doesn’t exist, like plot_diamonds(diamonds, fake_column)?</li>
+            <li>What if you try to plot a categorical variable (like cut) on the x-axis? Does it still work? Is the result useful?</li>
+            <li>Price vs Carat - The plot shows small diamonds at low prices, but some dots “break the trend.” What could explain these outliers?</li>
+            <li># - Price vs Carat - If you were a jewelry seller, would this plot help you set prices? Why or why not?</li>
         </ol>
     </div>
 
@@ -270,7 +279,6 @@ plot_price_distribution(diamonds, log_scale = TRUE, highlight_cut = "Ideal")</co
             <li><strong>Clear Naming:</strong> Use verbs for functions (<code>calculate_</code>, <code>plot_</code>)</li>
             <li><strong>Defensive Programming:</strong> Check inputs and handle edge cases</li>
             <li><strong>Documentation:</strong> Use comments to explain purpose and parameters</li>
-            <li><strong>Ethical Awareness:</strong> Consider how your functions might be misused</li>
         </ul>
     </div>
 
