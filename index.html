@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>R Functions with Ethical Data Practice</title>
+    <title>R Functions with Data Practice</title>
     <style>
         body {
             font-family: 'Helvetica Neue', Arial, sans-serif;
@@ -138,7 +138,7 @@ diamonds <- diamonds |>
         <button class="copy-btn" onclick="copyCode(this)">Copy Code</button>
         <pre><code> # Add calculated columns
 enhance_diamonds <- function(df) {
-  df |>
+  df %>%
     mutate(
       price_per_carat = price / carat,
       size_mm = carat^(1/3) * 6.5,
@@ -173,17 +173,13 @@ diamonds_flagged %>%
     </div>
 
     <div class="checkpoint">
-        <h3>Understanding Check</h3>
+        <h3>Discussion</h3>
         <p><strong>Q1:</strong> How would you modify this function to make the threshold optional, defaulting to the median price?</p>
         <p><strong>Q2:</strong> What's the advantage of returning the modified data frame instead of just the expensive flags?</p>
     </div>
 
-    <div class="ethics">
-        <h3>Ethical Data Practice</h3>
-
         <p>The <code>diamonds</code> dataset shows that Ideal-cut diamonds (highest quality) average <strong>$3,458</strong> while Fair-cut (lowest quality) average <strong>$4,359</strong>.</p>
         
-        <p><strong>Discussion Questions:</strong></p>
         <ol>
             <li>How might using price/carat alone as a "value" metric reinforce market biases against certain diamond cuts?</li>
             <li>What additional variables from the dataset (e.g., clarity, color) should we consider for a more balanced valuation?</li>
@@ -195,10 +191,8 @@ diamonds_flagged %>%
         <ol>
             <li>Should a function that flags "overpriced" diamonds account for subjective human perception of color grades?</li>
             <li>How might using fixed price thresholds disadvantage certain diamond sizes or cuts?</li>
-            <li>What ethical obligations do we have when creating categorization functions that might affect purchasing decisions?</li>
         </ol>
-    </div>
-
+</div>
     <h2>3. Plot Functions</h2>
     
     <div class="concept-box">
@@ -259,15 +253,12 @@ plot_diamonds(diamonds, carat, color = "red")
     </div>
 
     <div class="ethics">
-        <h3>Ethical Data Practice</h3>
-        <p>The log-scale visualization compresses price differences, making the $1,000-$10,000 range (where most diamonds cluster) appear less varied than the ultra-high end.</p>
-        
-        <p><strong>Discussion Questions:</strong></p>
+        <h3>Discussion</h3>
         <ol>
             <li>What happens if you use a column that doesn’t exist, like plot_diamonds(diamonds, fake_column)?</li>
             <li>What if you try to plot a categorical variable (like cut) on the x-axis? Does it still work? Is the result useful?</li>
             <li>Price vs Carat - The plot shows small diamonds at low prices, but some dots “break the trend.” What could explain these outliers?</li>
-            <li># - Price vs Carat - If you were a jewelry seller, would this plot help you set prices? Why or why not?</li>
+            <li>Price vs Carat - If you were a jewelry seller, would this plot help you set prices? Why or why not?</li>
         </ol>
     </div>
 
