@@ -155,7 +155,7 @@ glimpse(diamonds_enhanced)
             
             # Function to flag diamonds above a price threshold
 flag_expensive <- function(df, threshold) {
-  df |> 
+  df %>% 
     mutate(
       expensive = price > threshold,
       # Add context about how far above threshold
@@ -164,11 +164,11 @@ flag_expensive <- function(df, threshold) {
 }
 
 # Apply with $5,000 threshold
-diamonds_flagged <- diamonds |> 
+diamonds_flagged <- diamonds %>% 
   flag_expensive(5000)
 
 # Count expensive diamonds
-diamonds_flagged |> 
+diamonds_flagged %>% 
   count(expensive)</code></pre>
     </div>
 
